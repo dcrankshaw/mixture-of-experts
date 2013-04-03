@@ -1,0 +1,8 @@
+For the derivatives, we can precompute P(Z) for both partial derivs.
+
+For the beta derivative, do we sum over all of the j's for the j, or
+do we sum over i? I think the indices are messed up
+
+I don't think my implementation of the E step is right
+
+Need to think about when an expert doesn't label an instance
