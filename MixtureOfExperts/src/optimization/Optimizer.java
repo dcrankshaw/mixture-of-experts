@@ -64,7 +64,7 @@ public abstract class Optimizer
 		// precompute the probability of z
 		double[] probabilityOfZ = EM.probabilityOfZ(trueLabels, numberOfLabels);
 		
-		double[] derivatives = new double[alpha.length];
+		double[] derivatives = new double[beta.length];
 		
 		for (int j = 0; j < beta.length; j++)
 		{
