@@ -60,8 +60,10 @@ public class DataUtils
 		for (int i = 0; i < alpha.length; ++i)
 		{
 			// generates a double in [-10, 10]
-			alpha[i] = (rand.nextDouble() - 0.5)*20.0;
+			alpha[i] = (rand.nextDouble() - 0.5)*20000.0;
+			//System.out.print(alpha[i] + ", ");
 		}
+		//System.out.print("\n");
 		return alpha;
 	}
 	
@@ -72,8 +74,10 @@ public class DataUtils
 		for (int i = 0; i < beta.length; ++i)
 		{
 			// generates a double in [0, 10]
-			beta[i] = rand.nextDouble() * 10.0;
+			beta[i] = rand.nextDouble() * 10000.0;
+			//System.out.print(beta[i] + ", ");
 		}
+		//System.out.print("\n");
 		return beta;
 	}
 	

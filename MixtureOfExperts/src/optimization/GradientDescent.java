@@ -12,7 +12,7 @@ import em.EM;
  */
 public class GradientDescent extends Optimizer
 {
-	private static double STEP_SIZE = 10.0; 
+	private static double STEP_SIZE = .1; 
 	private static double EPSILON = 0.01;
 
 	public void optimize(DataContainer labels, double[] alpha, double[] beta, int[] trueLabels, int numberOfLabels)
@@ -47,8 +47,14 @@ public class GradientDescent extends Optimizer
 		//for (int i = 0; i < 5; ++i)
 		{
 			this.takeStep(newAlphas, gradient);
+			System.out.println("---------------------------------------------------------------------------");
 			//System.out.println("aaa");
 			gradient = Optimizer.alphaDerivative(labels, newAlphas, beta, trueLabels, numberOfLabels, probabilityOfZ);
+			for (int k = 0; k < 10; ++k)
+			{
+				System.out.print(newAlphas[k] + ", ");
+			}
+			System.out.print("\n");
 			//System.out.println("Finished step " + i + " for gradient descent alpha");
 			//System.out.println("alphas converged: " + this.hasConverged(gradient));
 			++i;
@@ -98,6 +104,7 @@ public class GradientDescent extends Optimizer
 	private void takeStep(double[] origin, double[] gradient)
 	{
 		for (int i = 0; i < origin.length; i++)
+			//TODO(crankshaw) changed minus to plus
 			origin[i] = origin[i] - STEP_SIZE * gradient[i];
 	}
 	
@@ -116,7 +123,8 @@ public class GradientDescent extends Optimizer
 				converged = false;
 				//break;
 			}
-			System.out.print("" + (gradient[index] - EPSILON) + ", ");
+			if (index < 10)
+				System.out.print(gradient[index] + ", ");
 				
 		}
 		System.out.println("");
