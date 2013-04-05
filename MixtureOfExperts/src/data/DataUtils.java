@@ -24,7 +24,7 @@ public class DataUtils
 		// 		instance_id, {expert_id}, {label}
 		// where {expert_id} is a list of expert IDs and {label} is the set of
 		// the respective labels
-		// the first line should also contain the number of experts and instances
+		// the first line should also contain the number of experts and instances (experts, instances, labels)
 		try
 		{
 			Scanner scanner = new Scanner(new FileReader(fileName));
