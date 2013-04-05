@@ -44,19 +44,16 @@ public class GradientDescent extends Optimizer
 		StopWatch convergence = new StopWatch();
 		int i = 0;
 		while (!this.hasConverged(gradient))
-		//for (int i = 0; i < 5; ++i)
 		{
 			this.takeStep(newAlphas, gradient);
 			System.out.println("---------------------------------------------------------------------------");
-			//System.out.println("aaa");
 			gradient = Optimizer.alphaDerivative(labels, newAlphas, beta, trueLabels, numberOfLabels, probabilityOfZ);
+			
 			for (int k = 0; k < 10; ++k)
 			{
 				System.out.print(newAlphas[k] + ", ");
 			}
 			System.out.print("\n");
-			//System.out.println("Finished step " + i + " for gradient descent alpha");
-			//System.out.println("alphas converged: " + this.hasConverged(gradient));
 			++i;
 		}
 		System.out.println("Time for alpha convergence: " + convergence.stop() + "\tnumber of steps: " + i);
