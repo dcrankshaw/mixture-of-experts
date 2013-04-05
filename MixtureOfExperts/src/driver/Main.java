@@ -1,4 +1,6 @@
 package driver;
+
+import util.StopWatch;
 import data.DataContainer;
 import data.DataUtils;
 import em.EM;
@@ -10,7 +12,7 @@ public class Main
 	private static final String INPUT_FILE = "data/omar_data";
 	
 	// the number of times to do EM
-	private static final int ITERATIONS = 10;
+	private static final int ITERATIONS = 1;
 	
 	// the labels given by expert i to instance j
 	private static DataContainer labels;
@@ -26,6 +28,10 @@ public class Main
 	
 	public static void main(String[] args)
 	{
+		
+		System.out.println("\n\n\n-----------------------------------------------------------------\n Starting new run.");
+		StopWatch fullProgram = new StopWatch();
+		fullProgram.start();
 		// read in the data
 		Main.labels = DataUtils.loadData(Main.INPUT_FILE);
 		
@@ -37,11 +43,17 @@ public class Main
 		// do EM
 		for (int i = 0; i < Main.ITERATIONS; i++)
 		{
-			// TODO what is Main.trueLabels????
+			StopWatch eStep = new StopWatch();
+			eStep.start();
 			EM.performExpectationStep(Main.labels, Main.alpha, Main.beta, Main.trueLabels);
+			System.out.println("E Step Time: " + eStep.stop()/1000.0);
+			StopWatch mStep = new StopWatch();
+			mStep.start();
 			EM.performMaximizationStep(Main.labels, Main.alpha, Main.beta, Main.trueLabels);
-			System.out.println("Finished step " + i);
+			System.out.println("M Step Time: " + mStep.stop()/1000.0);
+			System.out.println("\n-----------Finished step " + i + "-----------\n");
 		}
+		System.out.println("Time: " + fullProgram.stop()/1000.0);
 		
 	}
 }

@@ -24,10 +24,10 @@ public abstract class Optimizer
 	 * @param numberOfLabels The number of possible labels.
 	 * @return The derivatives with respect to the alphas.
 	 */
-	protected static double[] alphaDerivative(DataContainer labels, double[] alpha, double[] beta, int[] trueLabels, int numberOfLabels)
+	protected static double[] alphaDerivative(DataContainer labels, double[] alpha, double[] beta, int[] trueLabels, int numberOfLabels, double[] probabilityOfZ)
 	{
 		// precompute the probability of z
-		double[] probabilityOfZ = EM.probabilityOfZ(trueLabels, numberOfLabels);
+		//double[] probabilityOfZ = EM.probabilityOfZ(trueLabels, numberOfLabels);
 		
 		double[] derivatives = new double[alpha.length];
 		
@@ -59,10 +59,10 @@ public abstract class Optimizer
 	 * @param numberOfLabels Then number of possible labels.
 	 * @return The derivative with respect to the betas.
 	 */
-	protected static double[] betaDerivative(DataContainer labels, double[] alpha, double[] beta, int[] trueLabels, int numberOfLabels)
+	protected static double[] betaDerivative(DataContainer labels, double[] alpha, double[] beta, int[] trueLabels, int numberOfLabels, double[] probabilityOfZ)
 	{
 		// precompute the probability of z
-		double[] probabilityOfZ = EM.probabilityOfZ(trueLabels, numberOfLabels);
+		// double[] probabilityOfZ = EM.probabilityOfZ(trueLabels, numberOfLabels);
 		
 		double[] derivatives = new double[beta.length];
 		
