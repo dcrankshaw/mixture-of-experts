@@ -125,7 +125,7 @@ public class DataUtils
 		Random rand = new Random();
 		for (int i = 0; i < labels.length; ++i)
 		{
-			// generates a double in [0, 10]
+			// generates a double in [0, #number of labels]
 			labels[i] = rand.nextInt(numberOfLabels);
 		}
 		return labels;

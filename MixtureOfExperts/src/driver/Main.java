@@ -9,7 +9,7 @@ import em.EM;
 public class Main
 {
 	// the data input file
-	private static final String INPUT_FILE = "data/omar_data";
+	private static final String INPUT_FILE = "data/omar_data_small";
 	
 	// the number of times to do EM
 	private static final int ITERATIONS = 1;

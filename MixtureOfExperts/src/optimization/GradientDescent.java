@@ -12,7 +12,7 @@ import em.EM;
  */
 public class GradientDescent extends Optimizer
 {
-	private static double STEP_SIZE = .0001; 
+	private static double STEP_SIZE = .001; 
 	private static double EPSILON = 0.01;
 
 	public void optimize(DataContainer labels, double[] alpha, double[] beta, int[] trueLabels, int numberOfLabels)
@@ -102,7 +102,7 @@ public class GradientDescent extends Optimizer
 	{
 		for (int i = 0; i < origin.length; i++)
 			//TODO(crankshaw) changed minus to plus
-			origin[i] = origin[i] + STEP_SIZE * gradient[i];
+			origin[i] = origin[i] - STEP_SIZE * gradient[i];
 	}
 	
 	/**
