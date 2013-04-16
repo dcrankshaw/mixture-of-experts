@@ -56,28 +56,18 @@ public class DataUtils
 	public static double[] initializeAlpha(int numberOfInstances)
 	{
 		double[] alpha = new double[numberOfInstances];
-		Random rand = new Random();
 		for (int i = 0; i < alpha.length; ++i)
-		{
-			// generates a double in [-10, 10]
-			alpha[i] = (rand.nextDouble() - 0.5)*20000.0;
-			//System.out.print(alpha[i] + ", ");
-		}
-		//System.out.print("\n");
+			alpha[i] = 0.0;
+
 		return alpha;
 	}
 	
 	public static double[] initializeBeta(int numberOfExperts)
 	{
 		double[] beta = new double[numberOfExperts];
-		Random rand = new Random();
 		for (int i = 0; i < beta.length; ++i)
-		{
-			// generates a double in [0, 10]
-			beta[i] = rand.nextDouble() * 10000.0;
-			//System.out.print(beta[i] + ", ");
-		}
-		//System.out.print("\n");
+			beta[i] = 0.0;
+			
 		return beta;
 	}
 	
@@ -120,14 +110,25 @@ public class DataUtils
 		}
 	}
 
-	public static int[] initializeTrueLabels(int numberOfLabels) {
-		int[] labels = new int[numberOfLabels];
-		Random rand = new Random();
-		for (int i = 0; i < labels.length; ++i)
+	public static double[][] initializeTrueLabels(int numberOfLabels, int numberOfInstances) {
+		
+		double[][] z = new double[numberOfInstances][numberOfLabels];
+		
+		for (int i = 0; i < numberOfInstances; i++)
 		{
-			// generates a double in [0, #number of labels]
-			labels[i] = rand.nextInt(numberOfLabels);
+			for (int k = 0; k < numberOfLabels; k++)
+				z[i][k] = 1.0 / numberOfLabels;
 		}
-		return labels;
+		
+		return z;
+		
+//		int[] labels = new int[numberOfLabels];
+//		Random rand = new Random();
+//		for (int i = 0; i < labels.length; ++i)
+//		{
+//			// generates a double in [0, #number of labels]
+//			labels[i] = rand.nextInt(numberOfLabels);
+//		}
+//		return labels;
 	}
 }

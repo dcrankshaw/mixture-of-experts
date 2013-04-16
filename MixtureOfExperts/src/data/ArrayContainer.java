@@ -18,6 +18,13 @@ public class ArrayContainer implements DataContainer
 	public ArrayContainer(int numberOfExperts, int numberOfInstances, int numberOfLabels)
 	{
 		this.labels = new int[numberOfExperts][numberOfInstances];
+		
+		for (int i = 0; i < numberOfExperts; i++)
+		{
+			for (int j = 0; j < numberOfInstances; j++)
+				this.labels[i][j] = -1;
+		}
+		
 		this.numberOfLabels = numberOfLabels;
 		this.expertIntegerMap = new HashMap<String, Integer>();
 		this.instanceIntegerMap = new HashMap<String, Integer>();

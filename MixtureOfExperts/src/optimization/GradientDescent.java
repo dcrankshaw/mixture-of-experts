@@ -2,9 +2,7 @@ package optimization;
 
 import java.util.Arrays;
 
-import util.StopWatch;
 import data.DataContainer;
-import em.EM;
 
 /**
  * This class performs optimization on the alphas and betas using
@@ -15,16 +13,31 @@ public class GradientDescent extends Optimizer
 	private static double STEP_SIZE = .001; 
 	private static double EPSILON = 0.01;
 
-	public void optimize(DataContainer labels, double[] alpha, double[] beta, int[] trueLabels, int numberOfLabels)
+	public void optimize(DataContainer labels, double[] alpha, double[] beta, double[][] posterior, int numberOfLabels)
 	{
 		// figure out the new parameter values
-		double[] probabilityOfZ = EM.probabilityOfZ(trueLabels, numberOfLabels);
-		double[] newAlphas = this.optimizeAlphas(labels, alpha, beta, trueLabels, numberOfLabels, probabilityOfZ);
-		double[] newBetas = this.optimizeBetas(labels, alpha, beta, trueLabels, numberOfLabels, probabilityOfZ);
 		
+		double[] tmpAlpha = alpha;
+		double[] tmpBeta = beta;
+		for (int i = 0; i < 1000000; ++i) {
+			double[] tmptmpAlpha = this.optimizeAlphas(labels, tmpAlpha,tmpBeta, numberOfLabels, posterior);
+			double[] tmptmpBeta = this.optimizeBetas(labels, tmpAlpha, tmpBeta, numberOfLabels, posterior);
+			tmpAlpha = tmptmpAlpha;
+			tmpBeta = tmptmpBeta;
+			//System.out.println(Arrays.toString(tmpAlpha));
+			//System.out.println(Arrays.toString(posterior));
+			
+		}
+		System.out.println("DONE");
+		System.exit(0);
 		// update the values
-		alpha = newAlphas;
-		beta = newBetas;
+		//for (int i = 0; i < alpha.length; i++)
+	//		alpha[i] = newAlphas[i];
+	//	for (int i = 0; i < beta.length; i++)
+		//	beta[i] = newBetas[i];
+		
+	//	System.out.println("alphas: " + Arrays.toString(alpha));
+	//	System.out.println("betas: " + Arrays.toString(beta));
 	}
 	
 	/**
@@ -37,26 +50,19 @@ public class GradientDescent extends Optimizer
 	 * @param numberOfLabels The number of possible labels.
 	 * @return The new alphas.
 	 */
-	private double[] optimizeAlphas(DataContainer labels, double[] alpha, double[] beta, int[] trueLabels, int numberOfLabels, double[] probabilityOfZ)
+	private double[] optimizeAlphas(DataContainer labels, double[] alpha, double[] beta, int numberOfLabels, double[][] posterior)
 	{
 		double[] newAlphas = Arrays.copyOf(alpha, alpha.length);
-		double[] gradient = Optimizer.alphaDerivative(labels, newAlphas, beta, trueLabels, numberOfLabels, probabilityOfZ);
-		StopWatch convergence = new StopWatch();
-		int i = 0;
-		while (!this.hasConverged(gradient))
-		{
+		double[] gradient = Optimizer.alphaDerivative(labels, newAlphas, beta, numberOfLabels, posterior);
+//		while (!this.hasConverged(gradient))
+		//for (int i = 0; i < ; i++)
+		//{
 			this.takeStep(newAlphas, gradient);
-			System.out.println("---------------------------------------------------------------------------");
-			gradient = Optimizer.alphaDerivative(labels, newAlphas, beta, trueLabels, numberOfLabels, probabilityOfZ);
+			//System.out.println("alphas: " + Arrays.toString(newAlphas));
+			//gradient = Optimizer.alphaDerivative(labels, newAlphas, beta, numberOfLabels, posterior);
+			System.out.println("gradient: " + Arrays.toString(gradient));
 			
-			for (int k = 0; k < 10; ++k)
-			{
-				System.out.print(newAlphas[k] + ", ");
-			}
-			System.out.print("\n");
-			++i;
-		}
-		System.out.println("Time for alpha convergence: " + convergence.stop() + "\tnumber of steps: " + i);
+		//}
 		
 		return newAlphas;
 	}
@@ -71,24 +77,15 @@ public class GradientDescent extends Optimizer
 	 * @param numberOfLabels The number of possible labels.
 	 * @return The new betas.
 	 */
-	private double[] optimizeBetas(DataContainer labels, double[] alpha, double[] beta, int[] trueLabels, int numberOfLabels, double[] probabilityOfZ)
+	private double[] optimizeBetas(DataContainer labels, double[] alpha, double[] beta, int numberOfLabels, double[][] posterior)
 	{
 		double[] newBetas = Arrays.copyOf(beta, beta.length);
-		double[] gradient = Optimizer.betaDerivative(labels, alpha, newBetas, trueLabels, numberOfLabels, probabilityOfZ);
-		StopWatch convergence = new StopWatch();
-		convergence.start();
-		int i = 0;
-		while (!this.hasConverged(gradient))
-		//for (int i = 0; i < 5; ++i)
-		{
+		double[] gradient = Optimizer.betaDerivative(labels, alpha, newBetas, numberOfLabels, posterior);
+		//while (!this.hasConverged(gradient))
+		//{
 			this.takeStep(newBetas, gradient);
-			//System.out.println("bbb");
-			gradient = Optimizer.betaDerivative(labels, alpha, newBetas, trueLabels, numberOfLabels, probabilityOfZ);
-			System.out.println("Finished step " + i + " for gradient descent beta");
-			//System.out.println("betas converged: " + this.hasConverged(gradient));
-			++i;
-		}
-		System.out.println("Time for beta convergence: " + convergence.stop());
+			//gradient = Optimizer.betaDerivative(labels, alpha, newBetas, numberOfLabels, posterior);
+		//}
 		
 		return newBetas;
 	}
@@ -101,8 +98,7 @@ public class GradientDescent extends Optimizer
 	private void takeStep(double[] origin, double[] gradient)
 	{
 		for (int i = 0; i < origin.length; i++)
-			//TODO(crankshaw) changed minus to plus
-			origin[i] = origin[i] - STEP_SIZE * gradient[i];
+			origin[i] = origin[i] + STEP_SIZE * gradient[i];
 	}
 	
 	/**
@@ -118,12 +114,8 @@ public class GradientDescent extends Optimizer
 		{
 			if (gradient[index] > EPSILON) {
 				converged = false;
-				//break;
 			}
-			if (index < 10)
-				System.out.print(gradient[index] + ", ");
 		}
-		System.out.println("");
 		return converged;
 	}
 }

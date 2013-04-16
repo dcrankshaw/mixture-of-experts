@@ -1,4 +1,6 @@
 package em;
+import java.util.Arrays;
+
 import optimization.GradientDescent;
 import optimization.Optimizer;
 import data.DataContainer;
@@ -21,38 +23,8 @@ public class EM
 	 */
 	public static void performExpectationStep(DataContainer labels, double[] alpha, double[] beta, int[] trueLabels)
 	{
-		// precompute the probability of z
-		double[] probabilityOfZ = EM.probabilityOfZ(trueLabels, labels.getNumberOfLabels());
-		
-		int[] newLabels = new int[trueLabels.length];
-		
-		for (int instance = 0; instance < trueLabels.length; instance++)
-		{
-			double maximumProbability = Double.NEGATIVE_INFINITY;
-			int maximumLabel = -1;
-			
-			for (int label = 0; label < labels.getNumberOfLabels(); label++)
-			{
-				double probability = probabilityOfZ[label];
-				for (int i = 0; i < alpha.length; i++)
-				{
-					// we require the expert to have labeled the instance
-					if (labels.get(i, instance) != -1)
-						probability *= EM.posterior(labels.get(i, instance), trueLabels[instance], alpha[i], beta[instance], labels.getNumberOfLabels());
-				}
-				
-				if (probability > maximumProbability)
-				{
-					maximumProbability = probability;
-					maximumLabel = label;
-				}
-			}
-			
-			newLabels[instance] = maximumLabel;
-		}
-		
-		// update the assignments
-		trueLabels = newLabels;
+		System.out.println("Don't do that");
+		System.exit(0);
 	}
 	
 	/**
@@ -62,9 +34,15 @@ public class EM
 	 * @param beta The difficulty of each instance.
 	 * @param trueLabels The currently proposed true labels.
 	 */
-	public static void performMaximizationStep(DataContainer labels, double[] alpha, double[] beta, int[] trueLabels)
+	public static void performMaximizationStep(DataContainer labels, double[] alpha, double[] beta,int numberOfLabels)
 	{
-		EM.optimizer.optimize(labels, alpha, beta, trueLabels, labels.getNumberOfLabels());
+		double[][] posterior = EM.posterior(labels, alpha, beta, numberOfLabels);
+
+		System.out.println("posterior: " + Arrays.deepToString(posterior));
+		
+		EM.optimizer.optimize(labels, alpha, beta, posterior, labels.getNumberOfLabels());
+		
+		System.out.println("Liklihood: " + likelihoodOfData(labels,posterior,alpha,beta));
 	}
 	
 	/**
@@ -72,19 +50,43 @@ public class EM
 	 * @param labels The current labels.
 	 * @return The distribution.
 	 */
-	public static double[] probabilityOfZ(int[] trueLabels, int numberOfLabels)
+	public static double prior(int numberOfLabels)
 	{
-		double[] counts = new double[numberOfLabels];
+		return 1.0 / numberOfLabels;
+	}
+	
+	/**
+	 * Calculates the posterior, P(z_j | L_j, alpha, beta)
+	 * @param labels
+	 * @param alpha
+	 * @param beta
+	 * @param trueLabels
+	 * @param numberOfLabels
+	 * @return
+	 */
+	public static double[][] posterior(DataContainer labels, double[] alpha, double[] beta, int numberOfLabels)
+	{
+		// soon to be posterior
+		double[][] posterior = new double[beta.length][numberOfLabels];
 		
-		// count the occurrences
-		for (int index = 0; index < trueLabels.length; index++)
-			counts[trueLabels[index]]++;
+		for (int j = 0; j < beta.length; j++)
+		{
+			
+			for (int k = 0; k < numberOfLabels; ++k) {
+			// for all labelers
+				double product = 1;
+				for (int i = 0; i < alpha.length; i++) 
+				{
+					if (labels.get(i, j) != -1)
+					{
+						product *= EM.likelihood(labels.get(i,j), k, alpha[i], beta[j], numberOfLabels);
+					}
+				}
+				posterior[j][k] = product * prior(numberOfLabels);
+			}
+		}
 		
-		// normalize
-		for (int index = 0; index < trueLabels.length; index++)
-			counts[index] = counts[index] / trueLabels.length;
-		
-		return counts;
+		return posterior;
 	}
 	
 	/**
@@ -96,13 +98,47 @@ public class EM
 	 * @param numberOfLabels The number of possible labels that can be given to an instance.
 	 * @return The probability.
 	 */
-	private static double posterior(int label, int trueLabel, double alpha, double beta, int numberOfLabels)
+	private static double likelihood(int observedLabel, int k, double alpha, double beta, int numberOfLabels)
 	{
-		if (label == trueLabel)
+		if (k == observedLabel)
 			return EM.sigmoid(alpha * beta);
 		else
-			return (1 / (numberOfLabels - 1)) * (1 - EM.sigmoid(alpha * beta));
+			return (1.0 / (numberOfLabels - 1)) * (1 - EM.sigmoid(alpha * beta));
 	}
+	
+	public static double likelihoodOfData(DataContainer labels, double[][] posterior_z, double[] alpha, double beta[]) {
+		double prob = 0.0;
+		
+		int[] decodedLabels = decode(posterior_z);
+		for (int i = 0; i < labels.getNumberOfExperts(); ++i) {
+			for (int j = 0; j < labels.getNumberOfInstances(); ++j) {
+				if (labels.get(i,j) != -1) {
+					System.out.print(i + "\t" + j + "\t" + decodedLabels[j] + "\t");
+					System.out.println(EM.likelihood(labels.get(i,j), decodedLabels[j], alpha[i], beta[j], labels.getNumberOfLabels()));
+					prob += Math.log(EM.likelihood(labels.get(i,j), decodedLabels[j], alpha[i], beta[j], labels.getNumberOfLabels()));
+				}
+			}
+		}
+		
+		
+		return prob;
+	}
+	
+	public static int[] decode(double[][] posterior_z) {
+		int[] z = new int[posterior_z.length];
+		for (int j = 0; j < posterior_z.length; ++j) {
+			double maximum = 0.0;
+			for (int k = 0; k < posterior_z[0].length; ++k) {
+				if (posterior_z[j][k] > maximum) {
+					maximum = posterior_z[j][k];
+					z[j] = k;
+				}
+			}
+		}
+		
+		return z;
+	}
+	
 	
 	/**
 	 * Computes the sigmoid function at the given parameter.
